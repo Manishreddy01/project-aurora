@@ -1,17 +1,12 @@
-Tasks:
+# React + Vite
 
- Set up React app with Tailwind CSS
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
- Build chat interface (input box, response display, loading state)
+Currently, two official plugins are available:
 
- Add file upload UI (drag & drop or browse)
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
- Show uploaded file names / status
+## Expanding the ESLint configuration
 
- Display chatbot responses (highlight sources if possible)
-
- Handle loading, error, and empty states
-
- Optional: Toggle to show web-sourced vs document-based answers
-
- Connect to backend API (send user queries and receive responses)
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
