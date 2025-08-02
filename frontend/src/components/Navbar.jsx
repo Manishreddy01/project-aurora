@@ -1,4 +1,6 @@
+// src/components/Navbar.jsx
 import { motion } from "framer-motion";
+import logo from '../assets/AuroraLogo.png';
 
 export default function Navbar() {
   const reloadPage = () => {
@@ -13,12 +15,19 @@ export default function Navbar() {
       className="fixed top-0 left-0 w-full z-50 bg-[#0b1d36] shadow-md border-b border-white/10 h-16"
     >
       <div className="max-w-6xl mx-auto px-4 h-full flex items-center">
-        <h1
-          className="text-xl sm:text-2xl font-bold tracking-wide text-white cursor-pointer"
+        <div
+          className="flex items-center gap-3 cursor-pointer"
           onClick={reloadPage}
         >
-          Aurora AI
-        </h1>
+          <img
+            src={logo}
+            alt="Aurora AI Logo"
+            className="w-8 h-8 object-contain"
+          />
+          <h1 className="text-xl sm:text-2xl font-bold tracking-wide text-white">
+            Aurora AI
+          </h1>
+        </div>
       </div>
     </motion.nav>
   );
