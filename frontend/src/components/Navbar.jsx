@@ -1,17 +1,21 @@
 import { motion } from "framer-motion";
 
 export default function Navbar() {
+  const reloadPage = () => {
+    window.location.reload();
+  };
+
   return (
     <motion.nav
       initial={{ y: -40, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="w-full fixed top-0 left-0 z-50 bg-[#0f172a] shadow-md border-b border-white/10"
+      className="fixed top-0 left-0 w-full z-50 bg-[#0b1d36] shadow-md border-b border-white/10 h-16"
     >
-      <div className="max-w-6xl mx-auto px-4 py-4 flex justify-start items-center">
+      <div className="max-w-6xl mx-auto px-4 h-full flex items-center">
         <h1
-          className="text-xl sm:text-2xl font-bold tracking-wide text-white drop-shadow-sm cursor-pointer"
-          onClick={() => window.location.reload()}
+          className="text-xl sm:text-2xl font-bold tracking-wide text-white cursor-pointer"
+          onClick={reloadPage}
         >
           Aurora AI
         </h1>
