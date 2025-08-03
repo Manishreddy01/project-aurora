@@ -19,3 +19,26 @@ Tasks:
  Add confidence threshold logic
 
  Return complete response package (answer, source docs, type)
+
+
+ STEPS to run this folder:
+# Navigate to your working folder
+cd RAG Pipeline
+
+# Create a virtual environment named 'venv'
+python -m venv venv
+
+# Activate the virtual environment
+# Windows:
+venv\Scripts\activate
+# macOS/Linux:
+source venv/bin/activate
+
+pip install langchain openai qdrant-client sentence-transformers unstructured pypdf python-dotenv
+
+pip install -U langchain-community
+
+
+
+
+
