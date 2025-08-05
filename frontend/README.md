@@ -55,6 +55,8 @@ cd project-aurora/frontend
 
 2. Install dependencies
 
+npm install uuid
+
 npm install
 
 ⚠️ Make sure you’re inside the frontend/ folder before running any commands.

@@ -1,6 +1,6 @@
 import MessageBubble from "./MessageBubble";
 
-export default function ChatFeed({ messages }) {
+export default function ChatFeed({ messages = [] }) {
   return (
     <div className="space-y-4">
       {messages.map((msg, index) => (

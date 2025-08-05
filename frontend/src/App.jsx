@@ -1,59 +1,107 @@
 import { useState, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 import Navbar from "./components/Navbar";
 import ChatWindow from "./components/ChatWindow";
 import NewChatSidebar from "./components/NewChatSidebar";
 
 const LOCAL_STORAGE_KEY = "auroraChatHistory";
 
+
 export default function App() {
   const defaultMessage = [
-    { type: "bot", text: "I'm an AI chatbot. How can I help you today?" }
+    {
+      role: "bot",
+      content: "I'm an AI chatbot. How can I help you today?",
+    },
   ];
 
   const [messages, setMessages] = useState(defaultMessage);
   const [chatList, setChatList] = useState([]);
+  const [activeConversationId, setActiveConversationId] = useState(null);
 
-  // Load from storage
+  // Load from storage on mount
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
     if (saved?.length) {
       setChatList(saved);
-      setMessages(saved[saved.length - 1]); // Load last chat by default
+      const lastChat = saved[saved.length - 1];
+      setMessages(lastChat.messages);
+      setActiveConversationId(lastChat.conversationId);
     }
   }, []);
 
-  // Save current messages to storage when they change
-  useEffect(() => {
-    if (messages.length) {
-      const updated = [...chatList.slice(0, -1), messages];
-      setChatList(updated);
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
-    }
-  }, [messages]);
+  // Save when messages change
+useEffect(() => {
+  if (!activeConversationId || !messages?.length) return;
 
-  const handleNewChat = () => {
-    const newChat = defaultMessage;
-    const updated = [...chatList, newChat];
+  const updated = [...chatList];
+  const index = updated.findIndex(chat => chat.conversationId === activeConversationId);
+
+  if (index !== -1) {
+    updated[index] = {
+      ...updated[index],
+      messages: messages,
+    };
+
+    setChatList(updated); // ✅ preserve order
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+  }
+}, [messages]);
+
+
+
+  const handleNewChat = async () => {
+    const newId = uuidv4();
+    const newChat = {
+      conversationId: newId,
+      messages: defaultMessage,
+    };
+
+    try {
+      await fetch("http://localhost:8000/conversations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ conversationId: newId }),
+      });
+    } catch (error) {
+      console.error("Error creating conversation:", error);
+    }
+
+    const updated = [newChat, ...chatList ];
     setChatList(updated);
-    setMessages(newChat);
+    setMessages(defaultMessage);
+    setActiveConversationId(newId);
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
   };
 
   const handleSelectChat = (index) => {
-    setMessages(chatList[index]);
+    const selected = chatList[index];
+    setMessages(selected.messages);
+    setActiveConversationId(selected.conversationId);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1a365d] to-[#27496d] text-white">
+    <div className="h-screen flex flex-col">
       <Navbar />
-      <div className="flex pt-16 h-full">
-        <NewChatSidebar
-          onNewChat={handleNewChat}
-          chatList={chatList}
-          onSelectChat={handleSelectChat}
-        />
-        <div className="flex-1 flex items-center justify-center px-4">
-          <ChatWindow messages={messages} setMessages={setMessages} />
+
+      <div className="flex flex-1 overflow-hidden">
+        <div className="w-64 bg-gray-100 border-r border-gray-200 flex flex-col pt-16">
+          <NewChatSidebar
+            onNewChat={handleNewChat}
+            chatList={chatList}
+            onSelectChat={handleSelectChat}
+            activeConversationId={activeConversationId} 
+          />
+        </div>
+
+        <div className="flex-1 flex flex-col p-6 overflow-hidden">
+          <div className="flex-1 w-full max-w-3xl mx-auto overflow-y-auto pt-16">
+            <ChatWindow
+              messages={messages}
+              setMessages={setMessages}
+              conversationId={activeConversationId}
+            />
+          </div>
         </div>
       </div>
     </div>
