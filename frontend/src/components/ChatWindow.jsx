@@ -3,31 +3,46 @@ import ChatFeed from "./ChatFeed";
 import ChatInput from "./ChatInput";
 import FileUpload from "./FileUpload";
 
-export default function ChatWindow() {
-  const [messages, setMessages] = useState([
-    { role: "user", content: "Hi, how are you?" },
-    { role: "ai", content: "I'm an AI chatbot. How can I help you today?" },
-  ]);
-  const [files, setFiles] = useState([]);
+export default function ChatWindow({ messages, setMessages }) {
+  const [files, setFiles] = useState([]); // store uploaded files temporarily
 
-  const handleSend = (newMessage) => {
-    if (!newMessage.trim()) return;
-    setMessages((prev) => [...prev, { role: "user", content: newMessage }]);
+  const handleSend = (inputText) => {
+    if (!inputText.trim() && files.length === 0) return;
+
+    const newMessages = [];
+
+    // Add text message (if any)
+    if (inputText.trim()) {
+      newMessages.push({ role: "user", content: inputText });
+    }
+
+    // Add uploaded file messages
+    if (files.length > 0) {
+      const fileMessages = files.map((file) => ({
+        role: "user",
+        content: `📄 Uploaded: ${file.name}`,
+      }));
+      newMessages.push(...fileMessages);
+    }
+
+    // Push all messages to chat
+    setMessages((prev = []) => [...prev, ...newMessages]);
+
+    // ✅ Reset file upload and input box
     setFiles([]);
   };
 
   return (
-    <div className="w-full max-w-3xl h-[90vh] flex flex-col mx-auto rounded-xl overflow-hidden shadow-2xl border border-white/10 bg-white/10 backdrop-blur-lg backdrop-saturate-150 text-white">
-      
-      {/* Chat Feed Area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+    <div className="flex flex-col h-full">
+      <div className="flex-1 overflow-y-auto space-y-5 px-4">
         <ChatFeed messages={messages} />
       </div>
 
-      {/* Input & Upload */}
-      <div className="border-t border-white/10 bg-white/10 backdrop-blur-md px-4 py-3">
-        <FileUpload files={files} setFiles={setFiles} />
+      <div className="mt-4 p-4 bg-white space-y-4">
+        {/* Drag & drop stays visible until user clicks send */}
         <ChatInput onSend={handleSend} />
+        <FileUpload files={files} setFiles={setFiles} />
+        
       </div>
     </div>
   );

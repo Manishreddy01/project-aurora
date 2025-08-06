@@ -1,11 +1,15 @@
 import { useRef } from "react";
 
-export default function FileUpload({ files, setFiles }) {
+export default function FileUpload({ files, setFiles, onFileUpload }) {
   const inputRef = useRef(null);
 
   const handleFiles = (selected) => {
     const fileList = Array.from(selected);
     setFiles([...files, ...fileList]);
+    if (onFileUpload) {
+    onFileUpload(fileList); // ✅ This triggers chat message creation
+}
+
   };
 
   const handleDrop = (e) => {
