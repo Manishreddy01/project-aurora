@@ -9,7 +9,7 @@ from langchain.vectorstores import Qdrant
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.schema.document import Document
 from typing import List, Tuple
-from services.generate_answer import generate_answer
+from rag.chain.generate_answer import generate_answer
 
 def run_rag_pipeline(question: str, chat_history: list, conversation_id: str):
     try:

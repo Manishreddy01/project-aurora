@@ -5,7 +5,7 @@ import sys
 
 # Import store_vectors from Manesh's rag_pipeline folder
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'rag_pipeline')))
-from store_vectors import store_vectors
+from rag.vectorstore.store_vectors import store_vectors
 
 router = APIRouter()
 

@@ -153,3 +153,16 @@ __pycache__/
 
 # VSCode workspace
 .vscode/
+# Ignore venv and compiled files
+venv/
+backend/venv/
+*.pyc
+__pycache__/
+.DS_Store
+
+# Ignore venv and compiled files
+venv/
+backend/venv/
+*.pyc
+__pycache__/
+.DS_Store

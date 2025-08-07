@@ -3,10 +3,13 @@ import ChatFeed from "./ChatFeed";
 import ChatInput from "./ChatInput";
 import FileUpload from "./FileUpload";
 
-export default function ChatWindow({ messages, setMessages }) {
+// Set backend URL via .env or fallback to localhost
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+
+export default function ChatWindow({ messages, setMessages, conversationId }) {
   const [files, setFiles] = useState([]); // store uploaded files temporarily
 
-  const handleSend = (inputText) => {
+  const handleSend = async (inputText) => {
     if (!inputText.trim() && files.length === 0) return;
 
     const newMessages = [];
@@ -16,7 +19,7 @@ export default function ChatWindow({ messages, setMessages }) {
       newMessages.push({ role: "user", content: inputText });
     }
 
-    // Add uploaded file messages
+    // Add uploaded file names
     if (files.length > 0) {
       const fileMessages = files.map((file) => ({
         role: "user",
@@ -25,11 +28,50 @@ export default function ChatWindow({ messages, setMessages }) {
       newMessages.push(...fileMessages);
     }
 
-    // Push all messages to chat
-    setMessages((prev = []) => [...prev, ...newMessages]);
+    // Show user message(s) in UI
+    setMessages((prev) => [...prev, ...newMessages]);
 
-    // ✅ Reset file upload and input box
-    setFiles([]);
+    // Prepare upload form
+    const formData = new FormData();
+    formData.append("conversationId", conversationId);
+    if (inputText.trim()) formData.append("text", inputText);
+    files.forEach((file) => formData.append("files", file));
+
+    // Upload files + text to backend
+    try {
+      await fetch(`${BACKEND_URL}/upload/`, {
+        method: "POST",
+        body: formData,
+      });
+    } catch (error) {
+      console.error("Upload failed:", error);
+    }
+
+    // Query backend for response
+    try {
+      const res = await fetch(`${BACKEND_URL}/query/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: inputText, conversationId }),
+      });
+
+      const data = await res.json();
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: data.answer,
+          sources: data.sources,
+          type: data.type,
+          confidence: data.confidence,
+        },
+      ]);
+    } catch (err) {
+      console.error("Query failed:", err);
+    }
+
+    setFiles([]); // reset file input after send
   };
 
   return (
@@ -39,10 +81,8 @@ export default function ChatWindow({ messages, setMessages }) {
       </div>
 
       <div className="mt-4 p-4 bg-white space-y-4">
-        {/* Drag & drop stays visible until user clicks send */}
         <ChatInput onSend={handleSend} />
         <FileUpload files={files} setFiles={setFiles} />
-        
       </div>
     </div>
   );

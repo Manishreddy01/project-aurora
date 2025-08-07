@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RAG UI Tester</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h1>🧠 RAG Pipeline UI Tester</h1>
+
+  <div id="form-container">
+    <input type="file" id="fileInput" multiple />
+    <textarea id="questionInput" placeholder="Ask your question here..."></textarea>
+    <button id="submitBtn">Submit</button>
+    <p id="loadingText" style="display: none;">⏳ Generating answer...</p>
+  </div>
+
+  <div id="response-container">
+    <h2>📤 Response:</h2>
+    <pre id="responseBox"></pre>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
