@@ -80,30 +80,34 @@ useEffect(() => {
     setActiveConversationId(selected.conversationId);
   };
 
-  return (
-    <div className="h-screen flex flex-col">
-      <Navbar />
+return (
+  <div className="h-screen flex flex-col">
+    <Navbar />
 
-      <div className="flex flex-1 overflow-hidden">
-        <div className="w-64 bg-gray-100 border-r border-gray-200 flex flex-col pt-16">
-          <NewChatSidebar
-            onNewChat={handleNewChat}
-            chatList={chatList}
-            onSelectChat={handleSelectChat}
-            activeConversationId={activeConversationId} 
+    <div className="flex flex-1 overflow-hidden pt-16">
+      {/* Sidebar */}
+      <div className="w-64 bg-gray-100 border-r border-gray-200">
+        <NewChatSidebar
+          onNewChat={handleNewChat}
+          chatList={chatList}
+          onSelectChat={handleSelectChat}
+          activeConversationId={activeConversationId}
+        />
+      </div>
+
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* 👇 Scrollable area spans full width */}
+        <div className="flex-1 overflow-y-auto">
+          <ChatWindow
+            messages={messages}
+            setMessages={setMessages}
+            conversationId={activeConversationId}
           />
-        </div>
-
-        <div className="flex-1 flex flex-col p-6 overflow-hidden">
-          <div className="flex-1 w-full max-w-3xl mx-auto overflow-y-auto pt-16">
-            <ChatWindow
-              messages={messages}
-              setMessages={setMessages}
-              conversationId={activeConversationId}
-            />
-          </div>
         </div>
       </div>
     </div>
-  );
+  </div>
+);
+
 }

@@ -3,23 +3,20 @@ import ChatFeed from "./ChatFeed";
 import ChatInput from "./ChatInput";
 import FileUpload from "./FileUpload";
 
-// Set backend URL via .env or fallback to localhost
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
 export default function ChatWindow({ messages, setMessages, conversationId }) {
-  const [files, setFiles] = useState([]); // store uploaded files temporarily
+  const [files, setFiles] = useState([]);
 
   const handleSend = async (inputText) => {
     if (!inputText.trim() && files.length === 0) return;
 
     const newMessages = [];
 
-    // Add text message (if any)
     if (inputText.trim()) {
       newMessages.push({ role: "user", content: inputText });
     }
 
-    // Add uploaded file names
     if (files.length > 0) {
       const fileMessages = files.map((file) => ({
         role: "user",
@@ -28,16 +25,13 @@ export default function ChatWindow({ messages, setMessages, conversationId }) {
       newMessages.push(...fileMessages);
     }
 
-    // Show user message(s) in UI
     setMessages((prev) => [...prev, ...newMessages]);
 
-    // Prepare upload form
     const formData = new FormData();
     formData.append("conversationId", conversationId);
     if (inputText.trim()) formData.append("text", inputText);
     files.forEach((file) => formData.append("files", file));
 
-    // Upload files + text to backend
     try {
       await fetch(`${BACKEND_URL}/upload/`, {
         method: "POST",
@@ -47,7 +41,6 @@ export default function ChatWindow({ messages, setMessages, conversationId }) {
       console.error("Upload failed:", error);
     }
 
-    // Query backend for response
     try {
       const res = await fetch(`${BACKEND_URL}/query/`, {
         method: "POST",
@@ -71,16 +64,21 @@ export default function ChatWindow({ messages, setMessages, conversationId }) {
       console.error("Query failed:", err);
     }
 
-    setFiles([]); // reset file input after send
+    setFiles([]);
   };
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto space-y-5 px-4">
-        <ChatFeed messages={messages} />
+      {/* 👇 Scrollable feed container is full width */}
+      <div className="flex-1 overflow-y-auto">
+        {/* 👇 ChatFeed centered inside */}
+        <div className="w-full max-w-3xl mx-auto px-4 py-4">
+          <ChatFeed messages={messages} />
+        </div>
       </div>
 
-      <div className="mt-4 p-4 bg-white space-y-4">
+      {/* 👇 Input bar also centered */}
+      <div className="bg-white w-full max-w-3xl mx-auto px-4 py-4 space-y-4">
         <ChatInput onSend={handleSend} />
         <FileUpload files={files} setFiles={setFiles} />
       </div>
