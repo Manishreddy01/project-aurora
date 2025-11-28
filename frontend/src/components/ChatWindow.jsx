@@ -3,31 +3,86 @@ import ChatFeed from "./ChatFeed";
 import ChatInput from "./ChatInput";
 import FileUpload from "./FileUpload";
 
-export default function ChatWindow() {
-  const [messages, setMessages] = useState([
-    { role: "user", content: "Hi, how are you?" },
-    { role: "ai", content: "I'm an AI chatbot. How can I help you today?" },
-  ]);
-  const [files, setFiles] = useState([]);
+// Set backend URL via .env or fallback to localhost
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
-  const handleSend = (newMessage) => {
-    if (!newMessage.trim()) return;
-    setMessages((prev) => [...prev, { role: "user", content: newMessage }]);
-    setFiles([]);
+export default function ChatWindow({ messages, setMessages, conversationId }) {
+  const [files, setFiles] = useState([]); // store uploaded files temporarily
+
+  const handleSend = async (inputText) => {
+    if (!inputText.trim() && files.length === 0) return;
+
+    const newMessages = [];
+
+    // Add text message (if any)
+    if (inputText.trim()) {
+      newMessages.push({ role: "user", content: inputText });
+    }
+
+    // Add uploaded file names
+    if (files.length > 0) {
+      const fileMessages = files.map((file) => ({
+        role: "user",
+        content: `📄 Uploaded: ${file.name}`,
+      }));
+      newMessages.push(...fileMessages);
+    }
+
+    // Show user message(s) in UI
+    setMessages((prev) => [...prev, ...newMessages]);
+
+    // Prepare upload form
+    const formData = new FormData();
+    formData.append("conversationId", conversationId);
+    if (inputText.trim()) formData.append("text", inputText);
+    files.forEach((file) => formData.append("file", file));
+
+    // Upload files + text to backend
+    try {
+      await fetch(`${BACKEND_URL}/upload/`, {
+        method: "POST",
+        body: formData,
+      });
+    } catch (error) {
+      console.error("Upload failed:", error);
+    }
+
+    // Query backend for response
+    try {
+      const res = await fetch(`${BACKEND_URL}/query/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: inputText, conversationId }),
+      });
+
+      const data = await res.json();
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: data.answer,
+          sources: data.sources,
+          type: data.type,
+          confidence: data.confidence,
+        },
+      ]);
+    } catch (err) {
+      console.error("Query failed:", err);
+    }
+
+    setFiles([]); // reset file input after send
   };
 
   return (
-    <div className="w-full max-w-3xl h-[90vh] flex flex-col mx-auto rounded-xl overflow-hidden shadow-2xl border border-white/10 bg-white/10 backdrop-blur-lg backdrop-saturate-150 text-white">
-      
-      {/* Chat Feed Area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+    <div className="flex flex-col h-full">
+      <div className="flex-1 overflow-y-auto space-y-5 px-4">
         <ChatFeed messages={messages} />
       </div>
 
-      {/* Input & Upload */}
-      <div className="border-t border-white/10 bg-white/10 backdrop-blur-md px-4 py-3">
-        <FileUpload files={files} setFiles={setFiles} />
+      <div className="mt-4 p-4 bg-white space-y-4">
         <ChatInput onSend={handleSend} />
+        <FileUpload files={files} setFiles={setFiles} />
       </div>
     </div>
   );

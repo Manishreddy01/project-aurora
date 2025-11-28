@@ -1,16 +1,24 @@
-export default function MessageBubble({ role, content }) {
+export default function MessageBubble({ role, content, sources = [], confidence, type }) {
   const isUser = role === "user";
 
   return (
-    <div className={`w-full flex ${isUser ? "justify-end" : "justify-start"}`}>
+    <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[75%] px-5 py-3 rounded-2xl text-sm shadow-md whitespace-pre-line ${
+        className={`max-w-xl px-4 py-3 rounded-lg shadow-md whitespace-pre-wrap ${
           isUser
             ? "bg-blue-600 text-white rounded-br-none"
-            : "bg-gray-100 text-gray-800 rounded-bl-none border border-gray-300"
+            : "bg-gray-100 text-gray-900 rounded-bl-none"
         }`}
       >
-        {content}
+        <p>{content}</p>
+
+        {!isUser && sources?.length > 0 && (
+          <div className="mt-2 text-xs text-gray-500 border-t pt-2">
+            <div>🔗 <strong>Sources</strong>: {sources.join(", ")}</div>
+            <div>📄 <strong>Type</strong>: {type}</div>
+            <div>🎯 <strong>Confidence</strong>: {Math.round(confidence * 100)}%</div>
+          </div>
+        )}
       </div>
     </div>
   );

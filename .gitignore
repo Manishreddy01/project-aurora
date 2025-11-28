@@ -69,8 +69,8 @@ web_modules/
 .env
 .env.*
 !.env.example
-RAG Pipeline/venv/
-.env
+venv/
+backend/venv/
 
 
 # parcel-bundler cache (https://parceljs.org/)
@@ -140,3 +140,29 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+# macOS system files
+.DS_Store
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Backup swap files
+*.swp
+*.swo
+
+# VSCode workspace
+.vscode/
+# Ignore venv and compiled files
+venv/
+backend/venv/
+*.pyc
+__pycache__/
+.DS_Store
+
+# Ignore venv and compiled files
+venv/
+backend/venv/
+*.pyc
+__pycache__/
+.DS_Store
