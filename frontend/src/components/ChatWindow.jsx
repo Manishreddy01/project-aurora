@@ -35,7 +35,7 @@ export default function ChatWindow({ messages, setMessages, conversationId }) {
     const formData = new FormData();
     formData.append("conversationId", conversationId);
     if (inputText.trim()) formData.append("text", inputText);
-    files.forEach((file) => formData.append("files", file));
+    files.forEach((file) => formData.append("file", file));
 
     // Upload files + text to backend
     try {

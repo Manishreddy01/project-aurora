@@ -53,7 +53,7 @@ def store_vectors(content: Union[str, bytes], file_name: str, conversation_id: s
     try:
         # Case 1: content is file path
         if isinstance(content, str) and Path(content).exists():
-            documents = load_documents(file_path=Path(content))
+            documents = load_documents(content, file_name)
         
         # Case 2: content is in-memory bytes (file upload)
         elif isinstance(content, bytes):
@@ -62,7 +62,7 @@ def store_vectors(content: Union[str, bytes], file_name: str, conversation_id: s
         
         # Case 3: content is plain text (from textarea)
         elif isinstance(content, str):
-            documents = load_documents(file_content=content.encode(), file_name="pasted_text.txt")
+            documents = load_documents(content.encode(), "pasted_text.txt")
         
         else:
             raise ValueError("Unsupported content type in store_vectors()")

@@ -33,7 +33,10 @@ pip install -r requirements.txt
 If starting fresh:
 ```bash
 pip install fastapi uvicorn python-multipart openai qdrant-client langchain httpx python-dotenv
-pip freeze > requirements.txt
+pip install langchain_qdrant
+ pip install langchain_huggingface
+ pip install langchain_community  
+pip freeze > requirements.
 ```
 
 ---
@@ -44,6 +47,7 @@ pip freeze > requirements.txt
 OPENAI_API_KEY=your-openai-key
 TAVILY_API_KEY=your-tavily-key
 QDRANT_URL=http://localhost:6333
+OPENROUTER_API_KEY=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
 ```
 
 ---
@@ -108,3 +112,4 @@ backend/
 ---
 
 You’re ready to connect frontend ↔ backend ↔ RAG pipeline!
+txt
